@@ -1,0 +1,6 @@
+scetool_src/mt19937.o: scetool_src/mt19937.cpp /usr/include/stdc-predef.h \
+ scetool_src/mt19937.h
+
+/usr/include/stdc-predef.h:
+
+scetool_src/mt19937.h:

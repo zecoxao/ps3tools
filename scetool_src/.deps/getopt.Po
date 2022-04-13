@@ -1,0 +1,3 @@
+scetool_src/getopt.o: scetool_src/getopt.cpp /usr/include/stdc-predef.h
+
+/usr/include/stdc-predef.h:
