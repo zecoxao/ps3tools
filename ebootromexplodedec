@@ -9,29 +9,27 @@ fi
 pup=$1
 outdir=$2
 
-pupunpack $pup $outdir || exit
+cosunpack $pup $outdir || exit
 
 cd $outdir || exit
 
-mkdir update_files
-cd update_files
-tar xvf ../update_files.tar || exit
+cosunpack lv0_bank0 lv0_out
+cosunpack individual indiv
+cd indiv
+cosunpack individual_1 one
+cd ..
 
-for f in dev_flash*; do
-    unpkg $f ${f}_unpkg || exit
-    tar xvf ${f}_unpkg/content || exit
-done
+cosunpack os coreos
+cd coreos
 
 for f in *.pkg; do
-    unpkg $f ${f%.pkg}
-    if [ $f = "CORE_OS_PACKAGE.pkg" ]; then
-        cosunpkg CORE_OS_PACKAGE/content CORE_OS_PACKAGE/
-    fi
+	unpkg $f ${f%.pkg}
 done
 
 cd ..
 
+cosunpack coreos/CORE_OS_PACKAGE/content coreos/CORE_OS_PACKAGE/
+
 for k in $(find . -name "*.self" -or -name "*.sprx" -or -name "*.isoself" -or -name "*ldr" -or -name "*lv0"); do
 	scetool -p ~/data -d $k ${k}.elf
 done
-
