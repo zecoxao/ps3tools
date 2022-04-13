@@ -8,7 +8,7 @@ AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall])
 
 # Checks for programs.
-AC_PROG_CC
+AC_PROG_CXX
 
 # Checks for libraries.
 AC_CHECK_LIB([gmp], [__gmpz_init], [GMP_LIBS="-lgmp"], [GMP_LIBS=""])

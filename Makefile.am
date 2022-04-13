@@ -4,6 +4,8 @@
 #
 # Licensed under LGPL 2.1. See file COPYING.
 
+AUTOMAKE_OPTIONS = subdir-objects
+
 ERROR_CFLAGS = \
 	$(PS3TOOLS_CFLAGS) \
 	-fno-strict-aliasing \
@@ -44,7 +46,8 @@ bin_PROGRAMS = 	sceverify \
 		dat \
 		unspp \
 		eidsplitr \
-		spp
+		spp \
+		scetool
 
 bin_SCRIPTS = pupexplode \
 		ebootromexplode \
@@ -70,6 +73,55 @@ COMMON_DEPS =  types.h \
 		bn.c \
 		mingw_mmap.c \
 		mingw_mmap.h
+		
+SCETOOL_DEPS = scetool_src/aes.cpp \ 
+		scetool_src/aes_omac.h \
+		scetool_src/ecdsa.h \
+		scetool_src/getopt.cpp \
+		scetool_src/list.h \
+		scetool_src/np.h \
+		scetool_src/sce.cpp \
+		scetool_src/sha1.cpp \
+		scetool_src/tables.h \
+		scetool_src/zlib.h \
+		scetool_src/bn.cpp \
+		scetool_src/elf.h \
+		scetool_src/getopt.h \
+		scetool_src/pkg.cpp \
+		scetool_src/sce.h \
+		scetool_src/sha1.h \
+		scetool_src/types.h \
+		scetool_src/config.h \
+		scetool_src/elf_inlines.h \
+		scetool_src/keys.cpp \
+		scetool_src/mt19937.cpp \
+		scetool_src/pkg.h \
+		scetool_src/sce_inlines.h \
+		scetool_src/spp.cpp \
+		scetool_src/util.cpp \
+		scetool_src/aes.h \
+		scetool_src/ec.cpp \
+		scetool_src/frontend.cpp \
+		scetool_src/keys.h \
+		scetool_src/mt19937.h \
+		scetool_src/rvk.cpp \
+		scetool_src/self.cpp \
+		scetool_src/spp.h \
+		scetool_src/util.h \
+		scetool_src/aes_omac.cpp \
+		scetool_src/ecdsa.cpp \
+		scetool_src/frontend.h \
+		scetool_src/list.cpp \
+		scetool_src/np.cpp \
+		scetool_src/rvk.h \
+		scetool_src/self.h \
+		scetool_src/tables.cpp \
+		scetool_src/zconf.h \
+		scetool_src/main.cpp
+		
+
+scetool_SOURCES = $(SCETOOL_DEPS) 
+		
 
 sceverify_SOURCES = $(COMMON_DEPS) \
 		sceverify.c
