@@ -74,7 +74,7 @@ COMMON_DEPS =  types.h \
 		mingw_mmap.c \
 		mingw_mmap.h
 		
-SCETOOL_DEPS = scetool_src/aes.cpp \ 
+SCETOOL_DEPS = scetool_src/aes.cpp \
 		scetool_src/aes_omac.h \
 		scetool_src/ecdsa.h \
 		scetool_src/getopt.cpp \
