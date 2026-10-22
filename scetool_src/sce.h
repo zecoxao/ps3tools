@@ -499,6 +499,8 @@ typedef struct _sce_buffer_ctxt
 {
 	/*! SCE file buffer. */
 	u8 *scebuffer;
+	/*! Loaded SCE file buffer size (0 = unknown). */
+	u32 scebuffer_size;
 
 	/*! Cert file header. */
 	cert_file_header_t *cfh;

@@ -63,12 +63,14 @@ static bool _is_hexnumber(const s8 *str)
 
 static bool _fill_self_config_template(s8 *file, self_config_t *sconf)
 {
-	u8 *buf = _read_buffer(file, NULL);
+	u32 buf_len = 0;
+	u8 *buf = _read_buffer(file, &buf_len);
 	if(buf != NULL)
 	{
 		sce_buffer_ctxt_t *ctxt = sce_create_ctxt_from_buffer(buf);
 		if(ctxt != NULL)
 		{
+			ctxt->scebuffer_size = buf_len;
 			if(sce_decrypt_header(ctxt, NULL, NULL))
 			{
 				_LOG_VERBOSE("Template header decrypted.\n");
@@ -292,12 +294,14 @@ static bool _fill_npdrm_config(self_config_t *sconf)
 
 void frontend_print_infos(s8 *file)
 {
-	u8 *buf = _read_buffer(file, NULL);
+	u32 buf_len = 0;
+	u8 *buf = _read_buffer(file, &buf_len);
 	if(buf != NULL)
 	{
 		sce_buffer_ctxt_t *ctxt = sce_create_ctxt_from_buffer(buf);
 		if(ctxt != NULL)
 		{
+			ctxt->scebuffer_size = buf_len;
 			u8 *meta_info = NULL;
 			if(_meta_info != NULL)
 			{
@@ -373,13 +377,15 @@ void frontend_print_infos(s8 *file)
 void frontend_decrypt(s8 *file_in, s8 *file_out)
 {
 	bool is_header_decrypted = FALSE, is_data_decrypted = FALSE, is_cert_file_unencrypted = FALSE;
-	u8 *buf = _read_buffer(file_in, NULL);
+	u32 buf_len = 0;
+	u8 *buf = _read_buffer(file_in, &buf_len);
 
 	if(buf != NULL)
 	{
 		sce_buffer_ctxt_t *ctxt = sce_create_ctxt_from_buffer(buf);
 		if(ctxt != NULL)
 		{
+			ctxt->scebuffer_size = buf_len;
 			u8 *meta_info = NULL;
 			if(_meta_info != NULL)
 			{
@@ -441,7 +447,19 @@ void frontend_decrypt(s8 *file_in, s8 *file_out)
 						}
 						else
 						{
-							if(self_write_to_elf(ctxt, file_out) == TRUE)
+							//Header-only SCE: no encapsulated data present (loaded size does not
+							//extend past file_offset), so the ELF cannot be rebuilt. Dump the
+							//decrypted metadata/body region (metah .. file_offset) instead.
+							if(ctxt->scebuffer_size != 0 && (u64)ctxt->scebuffer_size <= _ES64(ctxt->cfh->file_offset))
+							{
+								u32 body_off = (u32)((u8 *)ctxt->metah - ctxt->scebuffer);
+								u32 body_size = (u32)(_ES64(ctxt->cfh->file_offset)) - body_off;
+								if(_write_buffer(file_out, (u8 *)ctxt->metah, body_size))
+									printf("[*] Header-only SELF: decrypted body (0x%X bytes @ 0x%X) written to %s.\n", body_size, body_off, file_out);
+								else
+									printf("[*] Error: Could not write decrypted body.\n");
+							}
+							else if(self_write_to_elf(ctxt, file_out) == TRUE)
 								printf("[*] ELF written to %s.\n", file_out);
 							else
 								printf("[*] Error: Could not write ELF.\n");

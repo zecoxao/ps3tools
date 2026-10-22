@@ -1067,6 +1067,19 @@ bool sce_decrypt_data(sce_buffer_ctxt_t *ctxt)
 		u32 first_chunk_size;
 		u8 *ptr = ctxt->scebuffer + _ES64(ctxt->metash[i].data_offset);
 
+		//Skip segments whose data lies outside the loaded file buffer (e.g. header-only
+		//SCE files whose segment table still references the original, absent body).
+		if(ctxt->scebuffer_size != 0)
+		{
+			u64 seg_off = _ES64(ctxt->metash[i].data_offset);
+			u64 seg_size = _ES64(ctxt->metash[i].data_size);
+			if(seg_off >= ctxt->scebuffer_size || seg_size > (u64)ctxt->scebuffer_size - seg_off)
+			{
+				printf("[*] Warning: Segment %03d (0x%X size 0x%X) lies outside the loaded file (0x%X); skipped.\n", i, (u32)seg_off, (u32)seg_size, ctxt->scebuffer_size);
+				continue;
+			}
+		}
+
 		//Decrypt segment.
 		if((_ES64(ctxt->metash[i].data_size)) != 0)
 		{
